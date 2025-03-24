@@ -27,22 +27,34 @@ pip install observerai[openai]
 import uuid
 from openai import OpenAI
 from observerai.openai import metric_chat_create
-from observerai import set_ids
-
-# Optionally set your trace IDs (thread-safe)
-set_ids(trace_id=str(uuid.uuid4()))
+from observerai.context import TraceContext
 
 client = OpenAI()
+TraceContext.set_trace_id(str(uuid.uuid4()))
+
 
 @metric_chat_create(metadata={"user_id": "123"})
-def call_openai():
+def test_openai_with_metadata():
     return client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": "Qual a capital da França?"}]
+        messages=[{"role": "user", "content": "Qual a capital da França?"}],
     )
 
-response = call_openai()
-print(response.choices[0].message.content)
+
+@metric_chat_create()
+def test_openai_without_metadata():
+    return client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": "Qual a capital da Argentina?"}],
+    )
+
+
+resposta = test_openai_with_metadata()
+print(resposta.choices[0].message.content)
+
+resposta = test_openai_without_metadata()
+print(resposta.choices[0].message.content)
+
 ```
 
 ## 📤 Output (Structured Log)
