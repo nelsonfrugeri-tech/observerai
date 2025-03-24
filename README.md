@@ -50,8 +50,8 @@ The decorator logs all metrics as a single structured JSON object to stdout:
 ```bash
 {
   "trace_id": "fadfd7d6-9150-4327-961f-dad5f048add1",
-  "span_id": c346b100-30d8-4eea-91e3-ddcc67d8d5e0,
-  "flow_id": d52f542f-2211-45e6-94ca-a6d55617787e,  
+  "span_id": "c346b100-30d8-4eea-91e3-ddcc67d8d5e0",
+  "flow_id": "d52f542f-2211-45e6-94ca-a6d55617787e", 
   "response": {
     "status_code": 200,
     "latency": {
