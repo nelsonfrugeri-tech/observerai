@@ -6,7 +6,6 @@ from structlog.types import Processor
 
 
 class LogDriver:
-
     def __init__(self) -> None:
         """
         Configure the structlog with the best practices for production environment.
