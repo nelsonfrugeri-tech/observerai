@@ -1,8 +1,14 @@
+
 import time
 import traceback
 from functools import wraps
 from typing import Callable, Any, Dict, Optional
 from unittest.mock import patch
+
+from openai import OpenAI
+from openai.types.chat import ChatCompletion
+from openai.types.completion_usage import CompletionUsage
+from openai.resources.chat.completions import Completions
 
 from observerai.schema.metric import ResponseMetric, LatencyMetric, ExceptionMetric
 from observerai.schema.model_metric import (
@@ -24,37 +30,42 @@ except ImportError:
 
 def intercept_openai_chat_completion(
     captured: Dict[str, Any], original_create: Callable
-):
-    def interceptor(*args, **kwargs):
+) -> Callable[..., ChatCompletion]:
+    def interceptor(self, *args, **kwargs) -> ChatCompletion:
         print("✅ Interceptor ativado")
         captured["model"] = kwargs.get("model", "unknown")
         messages = kwargs.get("messages", [])
         captured["prompt"] = messages[-1]["content"] if messages else ""
 
-        response = original_create(*args, **kwargs)
-        captured["answer"] = response.choices[0].message.content
-        captured["usage"] = (
-            response.usage.model_dump() if hasattr(response, "usage") else {}
-        )
+        response: ChatCompletion = original_create(self, *args, **kwargs)
+
+        try:
+            captured["answer"] = response.choices[0].message.content
+        except Exception:
+            captured["answer"] = ""
+
+        try:
+            usage: CompletionUsage = response.usage
+            captured["usage"] = {
+                "prompt_tokens": usage.prompt_tokens,
+                "completion_tokens": usage.completion_tokens,
+                "total_tokens": usage.total_tokens,
+            }
+        except Exception:
+            captured["usage"] = {}
+
         return response
 
     return interceptor
 
 
-def metric_chat_create(metadata: Optional[Dict[str, Any]] = None):
-    """
-    Parametrized decorator that intercepts openai.ChatCompletion.create()
-    and logs structured metrics via structlog.
-
-    The OpenAI API key must be configured by the application using this library.
-    """
-
+def metric_chat_create(metadata: Optional[Dict[str, Any]] = None) -> Callable[..., ChatCompletion]:
     if metadata is not None and not isinstance(metadata, dict):
         metadata = None
 
-    def decorator(func: Callable):
+    def decorator(func: Callable[..., ChatCompletion]) -> Callable[..., ChatCompletion]:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs) -> ChatCompletion:
             if openai is None:
                 raise ImportError(
                     "observerai: missing optional dependency 'openai'. "
@@ -64,20 +75,16 @@ def metric_chat_create(metadata: Optional[Dict[str, Any]] = None):
             start_time = time.time()
             captured: Dict[str, Any] = {}
 
-            try:
-                target = openai.chat.completions
-                original_create = target.create
-
+            try:                
                 with patch.object(
-                    target,
+                    Completions,
                     "create",
-                    side_effect=intercept_openai_chat_completion(
-                        captured, original_create
-                    ),
+                    new=intercept_openai_chat_completion(captured, Completions.create),
                 ):
                     result = func(*args, **kwargs)
 
                 latency = int((time.time() - start_time) * 1000)
+                usage_data = captured.get("usage", {})
 
                 metric = ModelMetric(
                     trace_id=get_trace_id(),
@@ -94,11 +101,9 @@ def metric_chat_create(metadata: Optional[Dict[str, Any]] = None):
                         answer=captured.get("answer", ""),
                     ),
                     token=TokenUsageMetric(
-                        prompt=captured.get("usage", {}).get("prompt_tokens", 0),
-                        completion=captured.get("usage", {}).get(
-                            "completion_tokens", 0
-                        ),
-                        total=captured.get("usage", {}).get("total_tokens", 0),
+                        prompt=usage_data.get("prompt_tokens", 0),
+                        completion=usage_data.get("completion_tokens", 0),
+                        total=usage_data.get("total_tokens", 0),
                     ),
                     evaluation=None,
                     metadata=metadata,

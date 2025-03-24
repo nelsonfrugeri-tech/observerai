@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "observerai"
-version = "0.0.1"
-description = "ObserverAI - Sistema de métricas para modelos de IA"
+version = "0.0.3"
+description = "observerai - Structured Observability for Generative AI"
 authors = ["Nelson Frugeri Jr <nelson.frugeri@icloud.com>"]
 readme = "README.md"
 packages = [{ include = "observerai" }]
