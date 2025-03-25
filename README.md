@@ -95,6 +95,67 @@ The decorator logs all metrics as a single structured JSON object to stdout:
 }
 ```
 
+Log example with Tools
+```bash
+{
+  "conversation": {
+    "question": {
+      "content": "Como está o clima em São Paulo hoje?",
+      "role": "user",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "get_clima",
+            "description": "Obtém informações meteorológicas de uma cidade",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "cidade": {
+                  "type": "string",
+                  "description": "Nome da cidade"
+                }
+              },
+              "required": ["cidade"]
+            }
+          }
+        }
+      ]
+    },
+    "answer": {
+      "content": null,
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "id": "call_123456789",
+          "type": "function",
+          "function": {
+            "name": "get_clima",
+            "arguments": "{\"cidade\": \"São Paulo\"}"
+          }
+        }
+      ]
+    }
+  },
+  "token_usage": {
+    "prompt": 82,
+    "completion": 25,
+    "total": 107
+  },
+  "response": {
+    "status_code": 200,
+    "latency": {
+      "time": 573,
+      "unit": "ms"
+    }
+  },
+  "trace_id": "9a8bf456-0c31-4d32-a71e-fa9c24aa0b11",
+  "event": "observerai.openai.completion.chat_create",
+  "level": "info",
+  "timestamp": "2025-03-24T19:29:12.081543Z"
+}
+```
+
 ## 🧭 Roadmap
 - [x] OpenAI support (text completions)
 - [ ] Gemini & Claude providers
