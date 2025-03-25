@@ -95,7 +95,7 @@ The decorator logs all metrics as a single structured JSON object to stdout:
 }
 ```
 
-Log example with Tools
+Conversation example when use tools
 ```bash
 {
   "conversation": {
@@ -136,23 +136,7 @@ Log example with Tools
         }
       ]
     }
-  },
-  "token_usage": {
-    "prompt": 82,
-    "completion": 25,
-    "total": 107
-  },
-  "response": {
-    "status_code": 200,
-    "latency": {
-      "time": 573,
-      "unit": "ms"
-    }
-  },
-  "trace_id": "9a8bf456-0c31-4d32-a71e-fa9c24aa0b11",
-  "event": "observerai.openai.completion.chat_create",
-  "level": "info",
-  "timestamp": "2025-03-24T19:29:12.081543Z"
+  }
 }
 ```
 
