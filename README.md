@@ -141,10 +141,13 @@ Conversation example when use tools
 ```
 
 ## 🧭 Roadmap
-- [x] OpenAI support (text completions)
-- [ ] Gemini & Claude providers
+- [x] OpenAI support (chat completions)
+- [ ] Gemini provider
 - [ ] RAG evaluations (RagasX)
-- [ ] Plug-and-play LLM evaluations via TruLens
+- [ ] Models evaluations (OpenAI and Gemini)
+- [ ] Async suport
+- [ ] Anthropic providers
+- [ ] OpenSource models
 
 ## 👥 Contributing
 PRs and discussions are welcome. Stay tuned for contribution guidelines and plugin architecture.

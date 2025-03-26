@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "observerai"
-version = "0.0.3"
+version = "0.1.0-alpha.1"
 description = "observerai - Structured Observability for Generative AI"
 authors = ["Nelson Frugeri Jr <nelson.frugeri@icloud.com>"]
 readme = "README.md"
