@@ -1,6 +1,5 @@
 import uuid
 from openai import OpenAI
-from openai.types.chat import ChatCompletionMessageParam
 from observerai.openai import metric_chat_create
 from observerai.context import TraceContext
 
