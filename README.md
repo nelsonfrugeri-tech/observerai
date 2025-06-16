@@ -142,12 +142,14 @@ Conversation example when use tools
 
 ## 🧭 Roadmap
 - [x] OpenAI support (chat completions)
-- [ ] Gemini provider
+- [x] Gemini provider
 - [ ] RAG evaluations (RagasX)
 - [ ] Models evaluations (OpenAI and Gemini)
 - [ ] Async suport
 - [ ] Anthropic providers
 - [ ] OpenSource models
+
+[Pypi Project](https://pypi.org/project/observerai/0.1.0a2/)
 
 ## 👥 Contributing
 PRs and discussions are welcome. Stay tuned for contribution guidelines and plugin architecture.
